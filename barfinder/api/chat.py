@@ -21,3 +21,9 @@ def createmessage():
     ai_req.query = message
     ai_res = ai_req.getresponse()
     return jsonify(json.loads(ai_res.read())), 200
+
+
+@mod.route('/messages/facebook', methods=['POST'])
+@csrf_protect.exempt
+def receive_fb_message():
+    return 'hi!', 200
