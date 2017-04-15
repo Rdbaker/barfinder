@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*-
 """The app module, containing the app factory function."""
+import os
+
 from apiai import ApiAI
 from flask import Flask, render_template
+from flask_sslify import SSLify
 
 from barfinder import commands, public, user, api
 from barfinder.assets import assets
-from barfinder.extensions import bcrypt, cache, csrf_protect, db, debug_toolbar, login_manager, migrate
+from barfinder.extensions import (bcrypt, cache, csrf_protect, db,
+                                  debug_toolbar, login_manager, migrate)
 from barfinder.settings import ProdConfig
 
 
@@ -39,6 +43,11 @@ def register_extensions(app):
     login_manager.init_app(app)
     debug_toolbar.init_app(app)
     migrate.init_app(app, db)
+
+    # only use SSL if we're on heroku
+    if 'DYNO' in os.environ:
+        SSLify(app)
+
     return None
 
 

@@ -43,3 +43,6 @@ apiai==1.2.3
 
 # FB chat integration
 fbmq>=2,<3
+
+# force SSL (heroku purposes)
+Flask-SSLify==0.1.5
