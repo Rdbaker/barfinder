@@ -31,4 +31,4 @@ def receive_fb_message():
 
 @mod.route('/messages/facebook', methods=['GET'])
 def verify_fb_callback():
-    return jsonify(status='ok'), 200
+    return '1966264784', 200
