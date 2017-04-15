@@ -27,3 +27,8 @@ def createmessage():
 @csrf_protect.exempt
 def receive_fb_message():
     return 'hi!', 200
+
+
+@mod.route('/messages/facebook', methods=['GET'])
+def verify_fb_callback():
+    return jsonify(status='ok'), 200
