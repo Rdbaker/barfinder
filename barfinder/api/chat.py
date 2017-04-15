@@ -1,16 +1,21 @@
 import json
 import os
 
+from fbmq import Page
 from flask import Blueprint, request, current_app, jsonify
 
 from barfinder.extensions import csrf_protect
 
+from . import facebook
+
 mod = Blueprint('chat', __name__, url_prefix='/api/chat')
 
+page = Page(os.environ.get('FB_ACCESS_TOKEN'))
 
-@mod.route('/messages', methods=['GET'])
-def getmessages():
-    return '', 200
+
+@page.handle_message
+def message_handler(event):
+    page.send(*facebook.receive_message(event))
 
 
 @mod.route('/messages', methods=['POST'])
@@ -27,7 +32,8 @@ def createmessage():
 @mod.route('/messages/facebook', methods=['POST'])
 @csrf_protect.exempt
 def receive_fb_message():
-    return 'hi!', 200
+    page.handle_webhook(request.get_data(as_text=True))
+    return jsonify(status='ok'), 200
 
 
 @mod.route('/messages/facebook', methods=['GET'])
