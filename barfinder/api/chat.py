@@ -1,4 +1,5 @@
 import json
+import os
 
 from flask import Blueprint, request, current_app, jsonify
 
@@ -31,4 +32,9 @@ def receive_fb_message():
 
 @mod.route('/messages/facebook', methods=['GET'])
 def verify_fb_callback():
-    return '1966264784', 200
+    challenge = request.args.get('hub.challenge')
+    verify_token = request.args.get('hub.verify_token')
+    if verify_token == os.environ.get('FB_VERIFY_TOKEN'):
+        return challenge, 200
+    else:
+        return 'forbidden', 403
