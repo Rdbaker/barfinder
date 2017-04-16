@@ -1,11 +1,13 @@
 """Callbacks to handle facebook events."""
-from barfinder.database import Column, SurrogatePK, Model, db
+from sqlalchemy.dialects.postgresql import JSONB
+
+from barfinder.database import Column, SurrogatePK, Model
 
 
 class RawFBMessage(Model, SurrogatePK):
     """A raw message from facebook."""
     __tablename__ = 'raw_fb_message'
-    message = Column(db.Text, nullable=False)
+    message = Column(JSONB, nullable=False)
 
 
 def receive_message(event):
