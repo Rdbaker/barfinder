@@ -48,6 +48,6 @@ def receive_message(event):
     ai_req = current_app.api_ai.text_request()
     ai_req.query = message
     ai_req.session_id = sender_id
-    ai_res = ai_req.getresponse()
+    ai_res = json.loads(ai_req.getresponse().read())
     ai_text = ai_res.get('fulfullment', {}).get('speech', '/shrug')
     return sender_id, ai_text
