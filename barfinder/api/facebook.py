@@ -2,6 +2,7 @@
 import json
 
 from fbmq import payload
+from flask import current_app
 from sqlalchemy.dialects.postgresql import JSONB
 
 from barfinder.database import Column, SurrogatePK, Model
@@ -44,4 +45,9 @@ def receive_message(event):
     RawFBMessage.create(message=event.messaging)
     sender_id = event.sender_id
     message = event.message_text
-    return sender_id, 'thanks for your message: {}'.format(message)
+    ai_req = current_app.api_ai.text_request()
+    ai_req.query = message
+    ai_req.session_id = sender_id
+    ai_res = ai_req.getresponse()
+    ai_text = ai_res.get('fulfullment', {}).get('speech', '/shrug')
+    return sender_id, ai_text
