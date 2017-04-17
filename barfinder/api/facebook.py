@@ -50,5 +50,5 @@ def receive_message(event):
     ai_req.session_id = sender_id
     ai_res = json.loads(ai_req.getresponse().read())
     ai_text = ai_res.get('result', {}).get('fulfillment', {})\
-        .get('speech', '/shrug')
+        .get('messages', [{}])[0].get('speech', '/shrug')
     return sender_id, ai_text
