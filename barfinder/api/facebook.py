@@ -1,11 +1,12 @@
 """Callbacks to handle facebook events."""
+import datetime as dt
 import json
 
 from fbmq import payload
 from flask import current_app
 from sqlalchemy.dialects.postgresql import JSONB
 
-from barfinder.database import Column, SurrogatePK, Model
+from barfinder.database import Column, SurrogatePK, Model, db
 
 old_to_json = payload.utils.to_json
 
@@ -39,6 +40,14 @@ class RawFBMessage(Model, SurrogatePK):
     """A raw message from facebook."""
     __tablename__ = 'raw_fb_message'
     message = Column(JSONB, nullable=False)
+    created_at = Column(db.DateTime, nullable=False, default=dt.datetime.utcnow)
+
+
+class RawAIResponse(Model, SurrogatePK):
+    """A raw message from API.ai"""
+    __tablename__ = 'raw_ai_message'
+    message = Column(JSONB, nullable=False)
+    created_at = Column(db.DateTime, nullable=False, default=dt.datetime.utcnow)
 
 
 def receive_message(event):
@@ -49,6 +58,7 @@ def receive_message(event):
     ai_req.query = message
     ai_req.session_id = sender_id
     ai_res = json.loads(ai_req.getresponse().read())
+    RawAIResponse.create(message=ai_res)
     ai_text = ai_res.get('result', {}).get('fulfillment', {})\
         .get('messages', [{}])[0].get('speech', '/shrug')
     return sender_id, ai_text
