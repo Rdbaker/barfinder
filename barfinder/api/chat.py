@@ -15,7 +15,10 @@ page = Page(os.environ.get('FB_ACCESS_TOKEN'))
 
 @page.handle_message
 def message_handler(event):
-    page.send(event.sender_id, 'is this working?')
+    response = facebook.receive_message(event)
+    print('heres the response')
+    print(response)
+    page.send(*response)
 
 
 @mod.route('/messages', methods=['POST'])
