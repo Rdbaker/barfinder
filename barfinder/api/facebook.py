@@ -61,4 +61,4 @@ def receive_message(event):
     RawAIResponse.create(message=ai_res)
     ai_text = ai_res.get('result', {}).get('fulfillment', {})\
         .get('messages', [{}])[0].get('speech', '/shrug')
-    return sender_id, ai_text
+    return ai_text
