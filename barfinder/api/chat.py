@@ -18,7 +18,7 @@ def message_handler(event):
     response = facebook.receive_message(event)
     print('heres the response')
     print(response)
-    page.send(event.sender_id, u'Good day!')
+    page.send(event.sender_id, str(response))
 
 
 @mod.route('/messages', methods=['POST'])
