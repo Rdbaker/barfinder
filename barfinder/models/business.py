@@ -3,8 +3,7 @@ import datetime as dt
 
 from sqlalchemy.dialects.postgresql import JSONB
 
-from barfinder.database import (Column, SurrogatePK, Model, db, relationship,
-                                reference_col)
+from barfinder.database import (Column, SurrogatePK, Model, db, relationship)
 
 
 class Business(Model, SurrogatePK):
@@ -20,6 +19,7 @@ class Business(Model, SurrogatePK):
     longitude = Column(db.Float())
     phone = Column(db.String(50))
     created_at = Column(db.DateTime, nullable=False, default=dt.datetime.utcnow)
+    business_tags = relationship('BusinessTag', cascade='delete')
 
 
 class Tag(Model, SurrogatePK):
@@ -29,13 +29,16 @@ class Tag(Model, SurrogatePK):
     title = Column(db.String(255))
     alias = Column(db.String(255), index=True)
     created_at = Column(db.DateTime, nullable=False, default=dt.datetime.utcnow)
+    business_tags = relationship('BusinessTag', cascade='delete')
 
 
 class BusinessTag(Model):
     """A join table for a Business <-> Tag relation."""
     __tablename__ = 'business_tag'
 
-    business_id = reference_col('business', primary_key=True)
+    business_id = Column(db.ForeignKey('business.id', ondelete='CASCADE'),
+                         primary_key=True)
     business = relationship('Business')
-    tag_id = reference_col('tag', primary_key=True)
+    tag_id = Column(db.ForeignKey('tag.id', ondelete='CASCADE'),
+                    primary_key=True)
     tag = relationship('Tag')
