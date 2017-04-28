@@ -40,14 +40,14 @@ class RawFBMessage(Model, SurrogatePK):
     """A raw message from facebook."""
     __tablename__ = 'raw_fb_message'
     message = Column(JSONB, nullable=False)
-    created_at = Column(db.DateTime, nullable=False, default=dt.datetime.utcnow)
+    created_at = Column(db.DateTime, default=dt.datetime.utcnow)
 
 
 class RawAIResponse(Model, SurrogatePK):
     """A raw message from API.ai"""
     __tablename__ = 'raw_ai_message'
     message = Column(JSONB, nullable=False)
-    created_at = Column(db.DateTime, nullable=False, default=dt.datetime.utcnow)
+    created_at = Column(db.DateTime, default=dt.datetime.utcnow)
 
 
 def receive_message(event):

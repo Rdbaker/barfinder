@@ -10,14 +10,11 @@ from barfinder import commands, public, user, api
 from barfinder.assets import assets
 from barfinder.extensions import (bcrypt, cache, csrf_protect, db,
                                   debug_toolbar, login_manager, migrate)
+from barfinder.models.business import Business, Tag, BusinessTag  # noqa
 from barfinder.settings import ProdConfig
 
 
 def create_app(config_object=ProdConfig):
-    """An application factory, as explained here: http://flask.pocoo.org/docs/patterns/appfactories/.
-
-    :param config_object: The configuration object to use.
-    """
     app = Flask(__name__.split('.')[0])
     app.config.from_object(config_object)
     register_extensions(app)
@@ -28,7 +25,7 @@ def create_app(config_object=ProdConfig):
 
     @app.before_first_request
     def initialize_apiai_service():
-        app.api_ai = ApiAI(client_access_token='8101999a68a84463bc08d775c714b37c')
+        app.api_ai = ApiAI(client_access_token=os.environ.get('API_AI_TOKEN'))
 
     return app
 
