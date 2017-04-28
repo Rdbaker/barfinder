@@ -26,7 +26,8 @@ class Tag(Model, SurrogatePK):
     """A tag associated with a business."""
     __tablename__ = 'tag'
 
-    name = Column(db.String(255), index=True)
+    title = Column(db.String(255))
+    alias = Column(db.String(255), index=True)
     created_at = Column(db.DateTime, nullable=False, default=dt.datetime.utcnow)
 
 
