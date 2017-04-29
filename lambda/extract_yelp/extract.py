@@ -43,7 +43,7 @@ def get_or_create_tags(tags, conn):
     for tag in tags:
         if not tag_exists(tag['alias'], conn):
             create_tag(tag, conn)
-            names.append(tag['alias'])
+        names.append(tag['alias'])
     return conn.execute(Tag.select().where(Tag.c.alias.in_(names))).fetchall()
 
 
