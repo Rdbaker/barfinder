@@ -21,6 +21,10 @@ class Business(Model, SurrogatePK):
     created_at = Column(db.DateTime, nullable=False, default=dt.datetime.utcnow)
     business_tags = relationship('BusinessTag', cascade='delete')
 
+    def __repr__(self):
+        return '<Business({name} | [{tags}])>'.format(
+            name=self.name, tags=self.raw_yelp_data.get('categories'))
+
 
 class Tag(Model, SurrogatePK):
     """A tag associated with a business."""
@@ -30,6 +34,10 @@ class Tag(Model, SurrogatePK):
     alias = Column(db.String(255), index=True)
     created_at = Column(db.DateTime, nullable=False, default=dt.datetime.utcnow)
     business_tags = relationship('BusinessTag', cascade='delete')
+
+    def __repr__(self):
+        return '<Tag({title} | {alias})>'.format(title=self.title,
+                                                 alias=self.alias)
 
 
 class BusinessTag(Model):
