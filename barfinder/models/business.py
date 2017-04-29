@@ -23,7 +23,7 @@ class Business(Model, SurrogatePK):
 
     def __repr__(self):
         return '<Business({name} | {tags})>'.format(
-            name=self.name,
+            name=self.name.encode('ascii', 'ignore'),
             tags=[c.get('title').encode('ascii', 'ignore')
                   for c in self.raw_yelp_data.get('categories')])
 
@@ -38,8 +38,9 @@ class Tag(Model, SurrogatePK):
     business_tags = relationship('BusinessTag', cascade='delete')
 
     def __repr__(self):
-        return '<Tag({title} | {alias})>'.format(title=self.title,
-                                                 alias=self.alias)
+        return '<Tag({title} | {alias})>'.format(
+            title=self.title.encode('ascii', 'ignore'),
+            alias=self.alias.encode('ascii', 'ignore'))
 
 
 class BusinessTag(Model):
