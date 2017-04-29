@@ -24,7 +24,7 @@ class Business(Model, SurrogatePK):
     def __repr__(self):
         return '<Business({name} | {tags})>'.format(
             name=self.name,
-            tags=[c.title for c in self.raw_yelp_data.get('categories')])
+            tags=[c.get('title') for c in self.raw_yelp_data.get('categories')])
 
 
 class Tag(Model, SurrogatePK):
