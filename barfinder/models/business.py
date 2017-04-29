@@ -22,8 +22,9 @@ class Business(Model, SurrogatePK):
     business_tags = relationship('BusinessTag', cascade='delete')
 
     def __repr__(self):
-        return '<Business({name} | [{tags}])>'.format(
-            name=self.name, tags=self.raw_yelp_data.get('categories'))
+        return '<Business({name} | {tags})>'.format(
+            name=self.name,
+            tags=[c.title for c in self.raw_yelp_data.get('categories')])
 
 
 class Tag(Model, SurrogatePK):
