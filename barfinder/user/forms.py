@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 """User forms."""
+import os
+
 from flask_wtf import Form
 from wtforms import PasswordField, StringField
 from wtforms.validators import DataRequired, Email, EqualTo, Length
@@ -27,6 +29,10 @@ class RegisterForm(Form):
     def validate(self):
         """Validate the form."""
         initial_validation = super(RegisterForm, self).validate()
+        admin_emails = os.environ.get('ADMIN_EMAILS', '').split(',')
+        if self.email.data not in admin_emails:
+            self.email.errors.append('Cannot create an account if you are not an admin')
+            return False
         if not initial_validation:
             return False
         user = User.query.filter_by(username=self.username.data).first()

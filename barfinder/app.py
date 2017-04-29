@@ -3,14 +3,16 @@
 import os
 
 from apiai import ApiAI
-from flask import Flask, render_template
+from flask import Flask, render_template, url_for, redirect
 from flask_sslify import SSLify
+from flask_admin import Admin
+from flask_login import current_user
 
 from barfinder import commands, public, user, api
 from barfinder.assets import assets
 from barfinder.extensions import (bcrypt, cache, csrf_protect, db,
                                   debug_toolbar, login_manager, migrate)
-from barfinder.models.business import Business, Tag, BusinessTag  # noqa
+from barfinder.models.business import Business, Tag, BusinessTag
 from barfinder.settings import ProdConfig
 
 
@@ -40,6 +42,8 @@ def register_extensions(app):
     login_manager.init_app(app)
     debug_toolbar.init_app(app)
     migrate.init_app(app, db)
+    admin = Admin(app, name='Barfinder', template_mode='bootstrap3')
+    register_admin_routes(admin)
 
     # only use SSL if we're on heroku
     if 'DYNO' in os.environ:
@@ -77,6 +81,21 @@ def register_shellcontext(app):
             'User': user.models.User}
 
     app.shell_context_processor(shell_context)
+
+
+def register_admin_routes(admin):
+    from flask_admin.contrib.sqla import ModelView
+
+    class BarfinderAdminView(ModelView):
+        def is_accessible(self):
+            return current_user.is_authenticated
+
+        def inaccessible_callback(self, name, **kwargs):
+            return redirect(url_for('public.home'))
+
+    admin.add_view(BarfinderAdminView(Business, db.session))
+    admin.add_view(BarfinderAdminView(Tag, db.session))
+    admin.add_view(BarfinderAdminView(BusinessTag, db.session))
 
 
 def register_commands(app):
