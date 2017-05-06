@@ -23,8 +23,8 @@ def message_handler(event):
         page.send(event.sender_id,
             Template.Generic([
                 Template.GenericElement(
-                    restaurant.id,
-                    subtitle=restaurant.name,
+                    restaurant.name,
+                    subtitle='\n'.join(restaurant.raw_yelp_data.get('display_address', [])),
                     image_url=restaurant.raw_yelp_data.get('image_url'),
                     buttons=[
                         Template.ButtonWeb("View in Yelp",
