@@ -44,13 +44,12 @@ def get_paginated_businesses(offset=OFFSET, key=None, radius=RADIUS, lat=LAT,
 
 
 def send_businesses_to_stream(businesses):
-    client = boto3.client('kinesis')
-    client.put_records(StreamName=KINESIS_STREAM, Records=[{
-        'Data': json.dumps(business),
-        'PartitionKey': business['id']}
-        for business in businesses]
-    )
-    logging.info('successfully sent data to kinesis stream')
+    client = boto3.client('lambda')
+    for business in businesses:
+        client.invoke_async(FunctionName='yelp-restaurant-extract',
+            InvokeArgs=json.dumps(business))
+        logging.info('successfully sent business ({}) to lambda function'
+            .format(business['id']))
 
 
 def crawl_businesses(key, radius=RADIUS, lat=LAT, lon=LON):
