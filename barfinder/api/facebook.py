@@ -63,11 +63,11 @@ def receive_message(event):
     ai_result = ai_res.get('result', {})
     tags = ai_result.get('parameters', {}).get('cuisine')
     if not tags:
-        return sender_id, 'What type of restaurant are you looking for?'
+        return None
     elif len(tags) == 1:
-        return sender_id, Business.query.join(BusinessTag).join(Tag)\
-            .filter(Tag.alias == tags[0]).first().name
+        return Business.query.join(BusinessTag).join(Tag)\
+            .filter(Tag.alias == tags[0]).first()
     else:
         # just take the first tag for now
-        return sender_id, Business.query.join(BusinessTag).join(Tag)\
-            .filter(Tag.alias == tags[0]).first().name
+        return Business.query.join(BusinessTag).join(Tag)\
+            .filter(Tag.alias == tags[0]).first()

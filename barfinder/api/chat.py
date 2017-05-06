@@ -1,7 +1,7 @@
 import json
 import os
 
-from fbmq import Page
+from fbmq import Page, Template
 from flask import Blueprint, request, current_app, jsonify
 
 from barfinder.extensions import csrf_protect
@@ -15,8 +15,26 @@ page = Page(os.environ.get('FB_ACCESS_TOKEN'))
 
 @page.handle_message
 def message_handler(event):
-    response = facebook.receive_message(event)
-    page.send(response[0], response[1].encode('ascii', 'ignore'))
+    restaurant = facebook.receive_message(event)
+    if restaurant is None:
+        page.send(event.sender_id, 'Sorry, I couldn\'t find a place with that '
+            'description')
+    else:
+        page.send(event.sender_id,
+            Template.Generic([
+                Template.GenericElement(
+                    restaurant.id,
+                    subtitle=restaurant.name,
+                    image_url=restaurant.raw_yelp_data.get('image_url'),
+                    buttons=[
+                        Template.ButtonWeb("View in Yelp",
+                                           restaurant.raw_yelp_data['url']),
+                        Template.ButtonPhoneNumber("Call",
+                                                   restaurant.raw_yelp_data.get('phone'))
+                    ]
+                )
+            ])
+        )
 
 
 @mod.route('/messages', methods=['POST'])
