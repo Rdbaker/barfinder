@@ -7,6 +7,7 @@ from flask import current_app
 from sqlalchemy.dialects.postgresql import JSONB
 
 from barfinder.database import Column, SurrogatePK, Model, db
+from barfinder.models import Business, Tag, BusinessTag
 
 old_to_json = payload.utils.to_json
 
@@ -59,6 +60,14 @@ def receive_message(event):
     ai_req.session_id = sender_id
     ai_res = json.loads(ai_req.getresponse().read())
     RawAIResponse.create(message=ai_res)
-    ai_text = ai_res.get('result', {}).get('fulfillment', {})\
-        .get('messages', [{}])[0].get('speech', '/shrug')
-    return sender_id, ai_text
+    ai_result = ai_res.get('result', {})
+    tags = ai_result.get('parameters', {}).get('cuisine')
+    if not tags:
+        return 'What type of restaurant are you looking for?'
+    elif len(tags) == 1:
+        return sender_id, Business.query.join(BusinessTag).join(Tag)\
+            .filter(Tag.alias == tags[0]).first().name
+    else:
+        # just take the first tag for now
+        return sender_id, Business.query.join(BusinessTag).join(Tag)\
+            .filter(Tag.alias == tags[0]).first().name
