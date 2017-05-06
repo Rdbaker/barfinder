@@ -7,7 +7,7 @@ from flask import current_app
 from sqlalchemy.dialects.postgresql import JSONB
 
 from barfinder.database import Column, SurrogatePK, Model, db
-from barfinder.models import Business, Tag, BusinessTag
+from barfinder.models.business import Business, Tag, BusinessTag
 
 old_to_json = payload.utils.to_json
 
